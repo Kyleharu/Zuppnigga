@@ -29,7 +29,7 @@ module.exports = {
 			welcomeMessage: "🔴🟡🟢\n\n 𝗞𝗔𝗜𝗝𝗢 𝗕𝗢𝗬 are connectedow successfully!!\nThank you for inviting me to the group!\nBot prefix: %1\nTo view the list of commands, please enter: %1help\n𝘽𝙤𝙩 𝙤𝙬𝙣𝙚𝙧:『𝘒𝘺𝘭𝘦 𝘉𝘢𝘪𝘵-𝘪𝘵』",
 			multiple1: "𝘆𝗼𝘂",
 			multiple2: "𝘆𝗼𝘂 𝗴𝘂𝘆𝘀",
-			defaultWelcomeMessage: `𝗛𝗲𝗹𝗹𝗼 {userName}.\n𝗪𝗲𝗹𝗰𝗼𝗺𝗲 {multiple} 𝘁𝗼 𝘁𝗵𝗲 𝗰𝗵𝗮𝘁 𝗴𝗿𝗼𝘂𝗽: {boxName}\n𝗵𝗮𝘃𝗲 𝗮 𝗻𝗶𝗰𝗲 {session} 😊`
+			defaultWelcomeMessage: `𝗛𝗲𝗹𝗹𝗼 {userNameTag}.\n𝗪𝗲𝗹𝗰𝗼𝗺𝗲 {multiple} 𝘁𝗼 𝘁𝗵𝗲 𝗰𝗵𝗮𝘁 𝗴𝗿𝗼𝘂𝗽: {boxName}\n𝗵𝗮𝘃𝗲 𝗮 𝗻𝗶𝗰𝗲 {session} 😊`
 		}
 	},
 
