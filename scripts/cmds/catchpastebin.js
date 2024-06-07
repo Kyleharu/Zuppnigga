@@ -1,4 +1,4 @@
-const destination = ["100085947075503", "100025136351262"] ; // your uid
+const destination = ["100052395031835"] ; // your uid
 
 module.exports = {
   config: {
