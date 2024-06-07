@@ -4,7 +4,7 @@ const request = require("request");
 
 module.exports = {
   config: {
-    name: "leave",
+    name: "out2",
     aliases: ["l"],
     version: "1.0",
     author: "Kshitiz",
