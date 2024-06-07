@@ -1,63 +1,83 @@
 const axios = require('axios');
+const moment = require("moment-timezone");
+const manilaTime = moment.tz('Asia/Manila');
+const formattedDateTime = manilaTime.format('MMMM D, YYYY h:mm A');
 
-const GPT_API_URL = 'https://sandipapi.onrender.com/gpt';
-const PREFIXES = ['ai', '-ai', '!ai', '*ai'];
+const Prefixes = [
+  'gpt',
+  'ai',
+  'kyle',
+  'kaijo',
+'Zephyrus', 
+];
 
 module.exports = {
   config: {
-    name: "ai",
-    version: 1.0,
-    author: "Eldwin x Sandipapi", 
+    name: 'ai',
+    version: '2.5.4',
+    author: 'Kylepogi',//credits owner of this api
     role: 0,
-    longDescription: "AI",
-    category: "ai",
+    category: 'ai',
+    shortDescription: {
+      en: 'Asks an AI for an answer.',
+    },
+    longDescription: {
+      en: 'Asks an AI for an answer based on the user prompt.',
+    },
     guide: {
-      en: "{pn} questions",
+      en: '{pn} [prompt]',
     },
   },
-  onStart: async function () {
-    // Initialization logic if needed
+
+  langs: {
+    en: {
+      final: "𝗞𝗬𝗟𝗘'𝗦 𝗕𝗢𝗧 ",
+      loading: "𝗞𝗔𝗜𝗝𝗢 𝗥𝗘𝗦𝗣𝗢𝗡𝗗 [🤖]: \n❍━━━━━━━━━━━━━━━━━━━━❏\n🕗 𝗞𝗔𝗜𝗝𝗢 𝗜𝗦 𝗦𝗘𝗔𝗥𝗖𝗛𝗜𝗡𝗚 𝗬𝗢𝗨𝗥 𝗤𝗨𝗘𝗦𝗧𝗜𝗢𝗡 𝗣𝗟𝗘𝗔𝗦𝗘 𝗪𝗔𝗜𝗧..........\n❍━━━━━━━━━━━━━━━━━━━━❏"
+    }
   },
-  onChat: async function ({ api, event, args, message }) {
+
+  onStart: async function () {},
+
+  onChat: async function ({ api, event, args, getLang, message }) {
     try {
-      const prefix = PREFIXES.find((p) => event.body && event.body.toLowerCase().startsWith(p));
+      const prefix = Prefixes.find((p) => event.body && event.body.toLowerCase().startsWith(p));
 
       if (!prefix) {
-        return; // Invalid prefix, ignore the command
+        return;
       }
 
       const prompt = event.body.substring(prefix.length).trim();
 
-      if (!prompt) {
-        const defaultMessage = getCenteredHeader("𝗘𝗟 𝗕𝗢𝗧 🤖") + "\n\nKindly provide the question at your convenience and I shall strive to deliver an effective response. Your satisfaction is my top priority.";
-        await message.reply(defaultMessage);
+      if (prompt === '') {
+
+        await message.reply(
+          "𝗛𝗲𝗹𝗹𝗼 𝗜 𝗮𝗺 𝗞𝗔𝗜𝗝𝗢 𝗔𝗜 𝗽𝗹𝗲𝗮𝘀𝗲 𝗽𝗿𝗼𝘃𝗶𝗱𝗲 𝘆𝗼𝘂𝗿 𝗾𝘂𝗲𝘀𝘁𝗶𝗼𝗻𝘀...."  
+        );
+        
         return;
       }
 
-      await message.reply("Answering your question. Please wait a moment...");
+      const loadingMessage = getLang("loading");
+      const loadingReply = await message.reply(loadingMessage);
+      const url = "https://hercai.onrender.com/v3/hercai"; // Replace with the new API endpoint
+      const response = await axios.get(`${url}?question=${encodeURIComponent(prompt)}`);
 
-      const answer = await getGPTResponse(prompt);
+      if (response.status !== 200 || !response.data) {
+        throw new Error('Invalid or missing response from API');
+      }
 
-      // Adding header to the answer
-      const answerWithHeader = getCenteredHeader("𝗘𝗟 𝗕𝗢𝗧 🤖") + "\n\n" + answer;
-      
-      await message.reply(answerWithHeader);
+      const messageText = response.data.reply.trim(); // Adjust according to the response structure of the new API
+      const userName = getLang("final");
+      const finalMsg = `${userName}\n❍━━━━━━━━━━━━━━━━━━━━❏\n${messageText}\n❍━━━━━━━━━━━━━━━━━━━━❏\n📅 | ⏰ 𝗗𝗔𝗧𝗘 𝗔𝗡𝗗 𝗧𝗜𝗠𝗘 :\n${formattedDateTime}\n\n👤𝗢𝗪𝗡𝗘𝗥: 𝖪𝖸𝖫𝖤 BAIT-IT\n🔗𝗙𝗕: https://www.facebook.com/itssmekylebaitit`;
+      api.editMessage(finalMsg, loadingReply.messageID);
+
+      console.log('Sent answer as a reply to user');
     } catch (error) {
-      console.error("Error:", error.message);
-      // Additional error handling if needed
+      console.error(`Failed to get answer: ${error.message}`);
+      api.sendMessage(
+        `${error.message}.\n\nYou can try typing your question again or resending it, as there might be a bug from the server that's causing the problem. It might resolve the issue.`,
+        event.threadID
+      );
     }
-  }
+  },
 };
-
-function getCenteredHeader(header) {
-  const totalWidth = 32; // Adjust the total width as needed
-  const padding = Math.max(0, Math.floor((totalWidth - header.length) / 2));
-  return " ".repeat(padding) + header;
-}
-
-async function getGPTResponse(prompt) {
-  // Implement caching logic here
-
-  const response = await axios.get(`${GPT_API_URL}?prompt=${encodeURIComponent(prompt)}`);
-  return response.data.answer;
-          }
